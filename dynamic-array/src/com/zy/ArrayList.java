@@ -82,9 +82,9 @@ public class ArrayList {
      * @param element
      */
     public void add(int element) {
-        // elements[size] = element;
-        // size++;
-        elements[size++] = element;
+        // elements[size++] = element;
+        // 传入数组数量(相当于在最后插入元素)
+        add(size, element);
     }
 
     /**
@@ -95,9 +95,7 @@ public class ArrayList {
      */
     public int get(int index) {
         // 约束Index
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Index:" + index + ", Size:" + size);
-        }
+        rangeCheck(index);
         return elements[index];
     }
 
@@ -109,9 +107,8 @@ public class ArrayList {
      * @return 原来的元素
      */
     public int set(int index, int element) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Index:" + index + ", Size:" + size);
-        }
+        rangeCheck(index);
+
         int oldEle = elements[index];
         elements[index] = element;
         return oldEle;
@@ -124,6 +121,12 @@ public class ArrayList {
      * @param element
      */
     public void add(int index, int element) {
+        // 注意: 这里和其他判断有所不同的是,这里index可以为size,此时是插入到了最后
+        /*if (index < 0 || index > size){
+            throw new IndexOutOfBoundsException("Index:" + index + ", Size:" + size);
+        }*/
+        rangeCheckForAdd(index);
+
         // 注意: 插入元素后,元素是从后开始往后挪
         for (int i = size - 1; i >= index; i--) {
             elements[i + 1] = elements[i];
@@ -139,9 +142,7 @@ public class ArrayList {
      * @return 被删除的元素
      */
     public int remove(int index) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Index:" + index + ", Size:" + size);
-        }
+        rangeCheck(index);
         int delEle = elements[index];
 
         // 当删除一个元素时,需要挪动后面元素的范围
@@ -165,6 +166,37 @@ public class ArrayList {
             }
         }
         return ELEMENT_NOT_FOUNT;
+    }
+
+    /**
+     * 封装数组越界异常
+     *
+     * @param index
+     */
+    private void indexOutOfBounds(int index) {
+        throw new IndexOutOfBoundsException("Index:" + index + ", Size:" + size);
+    }
+
+    /**
+     * 检查get,remove传入的index是否有效
+     *
+     * @param index
+     */
+    private void rangeCheck(int index) {
+        if (index < 0 || index >= size) {
+            indexOutOfBounds(index);
+        }
+    }
+
+    /**
+     * 根据index插入元素时,判断index是否有效
+     *
+     * @param index
+     */
+    private void rangeCheckForAdd(int index) {
+        if (index < 0 || index > size) {
+            indexOutOfBounds(index);
+        }
     }
 
     @Override

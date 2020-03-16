@@ -15,9 +15,15 @@ public class Main {
         arrayList.add(40);
         arrayList.add(50);
 
-        arrayList.remove(1);
+        // 往数组最后插入元素
+        arrayList.add(arrayList.size(), 100);
+        arrayList.remove(0);
+        arrayList.set(0, 10000);
+        int i = arrayList.get(0);
+        System.out.println(i);
 
-        arrayList.add(0, 100);
+        // 通过断言来判断,是否达到预期的结果
+        Assert.test(arrayList.get(3) == 50);
 
         System.out.println(arrayList);
     }
