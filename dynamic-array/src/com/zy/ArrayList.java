@@ -8,6 +8,18 @@ package com.zy;
  * @date 2020/3/15 19:39
  */
 public class ArrayList {
+    // ===============================
+    /*
+        重点
+
+        动态扩容思路:
+            1: 通过默认容量创建的数组,是在堆空间中随机生成的地址;如此一来
+            再申请空间拼接到该数组后,这种方式不可能实现;
+            2: 我们只能再创建一个大容量的数组,然后将之前数组中的元素移动到
+            这个数组中;然后将引用指向新数组即可!
+     */
+    // ===============================
+
     /**
      * 元素的数量
      */
@@ -121,11 +133,14 @@ public class ArrayList {
      * @param element
      */
     public void add(int index, int element) {
-        // 注意: 这里和其他判断有所不同的是,这里index可以为size,此时是插入到了最后
-        /*if (index < 0 || index > size){
-            throw new IndexOutOfBoundsException("Index:" + index + ", Size:" + size);
-        }*/
+        // 在添加元素的时候,判断index是否有效
         rangeCheckForAdd(index);
+
+        /*
+            该方法确保默认容量为多少,为了验证是否超过给定的默认容量,然后进行判断是否要扩容;
+            这里size+1为数组当前数量+1, 因为每次add都会增加一个容量
+        */
+        ensureCapacity(size + 1);
 
         // 注意: 插入元素后,元素是从后开始往后挪
         for (int i = size - 1; i >= index; i--) {
@@ -134,6 +149,7 @@ public class ArrayList {
         elements[index] = element;
         size++;
     }
+
 
     /**
      * 删除index位置的元素
@@ -166,6 +182,36 @@ public class ArrayList {
             }
         }
         return ELEMENT_NOT_FOUNT;
+    }
+
+    /**
+     * 确保至少要有capacity个容量
+     *
+     * @param capacity
+     */
+    private void ensureCapacity(int capacity) {
+        /*
+            动态扩容思路:
+                1: 通过默认容量创建的数组,是在堆空间中随机生成的地址;如此一来
+                再申请空间拼接到该数组后,这种方式不可能实现;
+                2: 我们只能再创建一个大容量的数组,然后将之前数组中的元素移动到
+                这个数组中;然后将数组引用指向新数组即可!
+         */
+        // 判断是否要扩容
+        int oldCapacity = elements.length;
+        if (oldCapacity >= capacity)
+            return; // 此时不扩容
+        // 扩增的容量自己定;这里新容量为旧容量的2倍
+        int newCapacity = oldCapacity * 2;
+        int[] newElements = new int[newCapacity];
+        // 将原来数组中的元素移动到新数组中
+        for (int i = 0; i < size; i++) {
+            newElements[i] = elements[i];
+        }
+        // 将数组引用指向新数组
+        elements = newElements;
+
+        System.out.println(oldCapacity + "扩容为:" + newCapacity);
     }
 
     /**

@@ -12,18 +12,10 @@ public class Main {
         arrayList.add(10);
         arrayList.add(20);
         arrayList.add(30);
-        arrayList.add(40);
-        arrayList.add(50);
 
-        // 往数组最后插入元素
-        arrayList.add(arrayList.size(), 100);
-        arrayList.remove(0);
-        arrayList.set(0, 10000);
-        int i = arrayList.get(0);
-        System.out.println(i);
-
-        // 通过断言来判断,是否达到预期的结果
-        Assert.test(arrayList.get(3) == 50);
+        for (int i = 0; i < 50; i++) {
+            arrayList.add(i);
+        }
 
         System.out.println(arrayList);
     }
