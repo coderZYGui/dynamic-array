@@ -7,16 +7,22 @@ package com.zy;
  * @author zygui
  * @date 2020/3/15 19:39
  */
-public class ArrayList {
+public class ArrayList<E> {
     // ===============================
     /*
-        重点
+        重点:
+            1、使用泛型,使动态数组可以添加任何类型的数据
+                elements = (E[]) new Object[capacity];
 
-        动态扩容思路:
-            1: 通过默认容量创建的数组,是在堆空间中随机生成的地址;如此一来
-            再申请空间拼接到该数组后,这种方式不可能实现;
-            2: 我们只能再创建一个大容量的数组,然后将之前数组中的元素移动到
-            这个数组中;然后将引用指向新数组即可!
+            2、clear方法的细节
+                1.1: 因为之前存储的都是int数据,直接设置size=0时,开辟的存储
+                        int类型的空间就不会被访问,当add后,就可以访问后面的空间,所以此时的
+                        空间可以重复利用;
+                1.2: 当使用泛型后,动态数组中存储的都是对象类型,实际存储的都是对象的地址,每一个
+                    对象的地址又有一块空间引用着;此时如果仍设置 size=0,当clear后,开辟的存储空间
+                    中的地址没有被销毁,地址仍被对象空间引用着;这样以来存储对象的空间就不会被释放;
+                    但是存储地址的数组可以重复利用; 所以要将地址数组都置为null,然后size=0,这样以来,引用
+                    该地址的对象空间也就释放了!
      */
     // ===============================
 
@@ -28,7 +34,7 @@ public class ArrayList {
     /**
      * 所有元素
      */
-    private int[] elements;
+    private E[] elements;
 
     /**
      * 数组的默认容量
@@ -49,13 +55,18 @@ public class ArrayList {
     public ArrayList(int capacity) {
         // 设置默认容量为 10
         capacity = (capacity < DEFAULT_CAPACITY) ? DEFAULT_CAPACITY : capacity;
-        elements = new int[capacity];
+
+        // 因为泛型(所以传一个Object数组,然后通过强转)
+        elements = (E[]) new Object[capacity];
     }
 
     /**
      * 清除所有元素
      */
     public void clear() {
+        for (int i = 0; i < size; i++) {
+            elements[i] = null;
+        }
         size = 0;
     }
 
@@ -83,7 +94,7 @@ public class ArrayList {
      * @param element
      * @return
      */
-    public boolean contains(int element) {
+    public boolean contains(E element) {
         // 如果element元素可以找到
         return indexOf(element) != ELEMENT_NOT_FOUNT;
     }
@@ -93,7 +104,7 @@ public class ArrayList {
      *
      * @param element
      */
-    public void add(int element) {
+    public void add(E element) {
         // elements[size++] = element;
         // 传入数组数量(相当于在最后插入元素)
         add(size, element);
@@ -105,7 +116,7 @@ public class ArrayList {
      * @param index
      * @return
      */
-    public int get(int index) {
+    public E get(int index) {
         // 约束Index
         rangeCheck(index);
         return elements[index];
@@ -118,10 +129,10 @@ public class ArrayList {
      * @param element
      * @return 原来的元素
      */
-    public int set(int index, int element) {
+    public E set(int index, E element) {
         rangeCheck(index);
 
-        int oldEle = elements[index];
+        E oldEle = elements[index];
         elements[index] = element;
         return oldEle;
     }
@@ -132,7 +143,7 @@ public class ArrayList {
      * @param index
      * @param element
      */
-    public void add(int index, int element) {
+    public void add(int index, E element) {
         // 在添加元素的时候,判断index是否有效
         rangeCheckForAdd(index);
 
@@ -157,9 +168,9 @@ public class ArrayList {
      * @param index
      * @return 被删除的元素
      */
-    public int remove(int index) {
+    public E remove(int index) {
         rangeCheck(index);
-        int delEle = elements[index];
+        E delEle = elements[index];
 
         // 当删除一个元素时,需要挪动后面元素的范围
         for (int i = index + 1; i <= size - 1; i++) {
@@ -175,7 +186,7 @@ public class ArrayList {
      * @param element
      * @return
      */
-    public int indexOf(int element) {
+    public int indexOf(E element) {
         for (int i = 0; i < size; i++) {
             if (elements[i] == element) {
                 return i;
@@ -190,20 +201,16 @@ public class ArrayList {
      * @param capacity
      */
     private void ensureCapacity(int capacity) {
-        /*
-            动态扩容思路:
-                1: 通过默认容量创建的数组,是在堆空间中随机生成的地址;如此一来
-                再申请空间拼接到该数组后,这种方式不可能实现;
-                2: 我们只能再创建一个大容量的数组,然后将之前数组中的元素移动到
-                这个数组中;然后将数组引用指向新数组即可!
-         */
+
         // 判断是否要扩容
         int oldCapacity = elements.length;
         if (oldCapacity >= capacity)
             return; // 此时不扩容
-        // 扩增的容量自己定;这里新容量为旧容量的2倍
-        int newCapacity = oldCapacity * 2;
-        int[] newElements = new int[newCapacity];
+
+        // 这种方式是扩容1.5倍
+        int newCapacity = oldCapacity + (oldCapacity >> 1);
+
+        E[] newElements = (E[]) new Object[newCapacity];
         // 将原来数组中的元素移动到新数组中
         for (int i = 0; i < size; i++) {
             newElements[i] = elements[i];
