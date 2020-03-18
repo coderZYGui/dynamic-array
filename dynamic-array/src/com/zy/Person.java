@@ -25,11 +25,29 @@ public class Person {
 
     /**
      * 该对象销毁的时候调用该方法
+     *
      * @throws Throwable
      */
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
         System.out.println("person - finalize");
+    }
+
+    /**
+     * 当年龄相同时,就认为相同
+     *
+     * @param obj
+     * @return
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj instanceof Person) {
+            Person person = (Person) obj;
+            return this.age == person.age;
+        }
+        return false;
     }
 }

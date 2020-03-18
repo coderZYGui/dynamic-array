@@ -11,21 +11,14 @@ public class ArrayList<E> {
     // ===============================
     /*
         重点:
-            1、使用泛型,使动态数组可以添加任何类型的数据
-                elements = (E[]) new Object[capacity];
-
-            2、clear方法的细节
-                1.1: 因为之前存储的都是int数据,直接设置size=0时,开辟的存储
-                        int类型的空间就不会被访问,当add后,就可以访问后面的空间,所以此时的
-                        空间可以重复利用;
-                1.2: 当使用泛型后,动态数组中存储的都是对象类型,实际存储的都是对象的地址,每一个
-                    对象的地址又有一块空间引用着;此时如果仍设置 size=0,当clear后,开辟的存储空间
-                    中的地址没有被销毁,地址仍被对象空间引用着;这样以来存储对象的空间就不会被释放;
-                    但是存储地址的数组可以重复利用; 所以要将地址数组都置为null,然后size=0,这样以来,引用
-                    该地址的对象空间也就释放了!
+            1、remove最后一个地址也要情况,同clear细节
+            2、在indexOf方法中,不用==比较,因为比较的是地址值,一般重写equals
+                方法自己定义比较内容即可;
+            3、null值处理:
+                当往数组传null的时候,indexOf的比较处理: 如果那null.equals来比较
+                会出现空指针异常;
      */
     // ===============================
-
     /**
      * 元素的数量
      */
@@ -177,7 +170,17 @@ public class ArrayList<E> {
             elements[i - 1] = elements[i];
         }
         size--;
+        // 同clear的细节,当从后往前以后时,最后一个的地址需要释放
+        elements[size] = null;
         return delEle;
+    }
+
+    /**
+     * 删除传入的元素
+     * @param element
+     */
+    public void remove(E element){
+        remove(indexOf(element));
     }
 
     /**
@@ -187,9 +190,17 @@ public class ArrayList<E> {
      * @return
      */
     public int indexOf(E element) {
-        for (int i = 0; i < size; i++) {
-            if (elements[i] == element) {
-                return i;
+        if (element == null) {
+            // 循环判断如果element为null,直接返回null的索引
+            for (int i = 0; i < size; i++) {
+                if (elements[i] == null)
+                    return i;
+            }
+        } else {
+            for (int i = 0; i < size; i++) {
+                // 因为element肯定不为null了,所以放在前面;避免空指针异常
+                if (element.equals(elements[i]))
+                    return i;
             }
         }
         return ELEMENT_NOT_FOUNT;

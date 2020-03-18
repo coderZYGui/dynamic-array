@@ -8,26 +8,21 @@ package com.zy;
  */
 public class Main {
     public static void main(String[] args) {
+        java.util.ArrayList arrayList = new java.util.ArrayList();
         ArrayList<Person> persons = new ArrayList<>();
         persons.add(new Person("zy", 22));
+        persons.add(null);
         persons.add(new Person("cy", 23));
         persons.add(new Person("xy", 25));
 
-        persons.clear();
-        // 通知JVM进行垃圾回收
-        System.gc();
-    }
+        //int i = persons.indexOf(new Person("sss", 25));
+        //System.out.println(i);
 
-    public static void test(){
-        ArrayList<Person> persons = new ArrayList<>();
-        persons.add(new Person("zy", 22));
-        persons.add(new Person("cy", 23));
+        persons.add(null);
         System.out.println(persons);
 
-        ArrayList<Integer> list = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            list.add(i);
-        }
-        System.out.println(list);
+        int i = persons.indexOf(null);
+        System.out.println("null的索引为:" + i);
+
     }
 }
