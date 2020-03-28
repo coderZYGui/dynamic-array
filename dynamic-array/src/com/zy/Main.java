@@ -23,6 +23,6 @@ public class Main {
 
         int i = persons.indexOf(null);
         System.out.println("null的索引为:" + i);
-
+        System.out.println("HelloWorld");
     }
 }
