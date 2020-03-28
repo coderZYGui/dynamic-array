@@ -11,12 +11,7 @@ public class ArrayList<E> {
     // ===============================
     /*
         重点:
-            1、remove最后一个地址也要情况,同clear细节
-            2、在indexOf方法中,不用==比较,因为比较的是地址值,一般重写equals
-                方法自己定义比较内容即可;
-            3、null值处理:
-                当往数组传null的时候,indexOf的比较处理: 如果那null.equals来比较
-                会出现空指针异常;
+            1、数组的缩容操作
      */
     // ===============================
     /**
@@ -172,14 +167,17 @@ public class ArrayList<E> {
         size--;
         // 同clear的细节,当从后往前以后时,最后一个的地址需要释放
         elements[size] = null;
+        // 缩容
+        trim();
         return delEle;
     }
 
     /**
      * 删除传入的元素
+     *
      * @param element
      */
-    public void remove(E element){
+    public void remove(E element) {
         remove(indexOf(element));
     }
 
@@ -230,6 +228,26 @@ public class ArrayList<E> {
         elements = newElements;
 
         System.out.println(oldCapacity + "扩容为:" + newCapacity);
+    }
+
+    /**
+     * 数组缩容
+     */
+    private void trim() {
+        // 获取当前数组的容量
+        int capacity = elements.length;
+        // 当size大于等于容量一半时,或者容量已经小于默认容量(10)时, 直接返回
+        if (size >= capacity >> 1 || capacity < DEFAULT_CAPACITY) return;;
+        // 计算新的容量 = 原来容量的一半
+        int newCapacity = capacity >> 1;
+        // 创建新数组
+        E[] newElements = (E[]) new Object[newCapacity];
+        // 将原来数组元素存入到新数组
+        for (int i = 0; i < size; i++) {
+            newElements[i] = elements[i];
+        }
+        // 引用新数组
+        elements = newElements;
     }
 
     /**

@@ -23,11 +23,5 @@ public class Main {
 
         int i = persons.indexOf(null);
         System.out.println("null的索引为:" + i);
-        System.out.println("HelloWorld");
-        System.out.println("HelloWorld");
-        System.out.println("add second branch");
-
-        System.out.println("easy push");
-        System.out.println("easy push2");
     }
 }
